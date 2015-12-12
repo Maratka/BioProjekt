@@ -5,7 +5,7 @@ import re
 import sys
 from projekt1.Drawer import Drawer
 from projekt1.Tree_with_info import Tree_with_info
-
+from dendropy import Tree, TaxonNamespace
 
 def loadData(path):
     """
@@ -50,26 +50,25 @@ def find_consensus_tree(trees, precent):
     # Tworzenie wszystkich rozbić drzewa i wstawianie ich do tablicy
     for tree in trees:
         tree_with_info = Tree_with_info(tree)
-        trees_with_info.append(trees_with_info)
+        trees_with_info.append(tree_with_info)
 
     # Porówanie każdgo elementu z tablicy z innymi tablicami
 
     for tree_with_info in trees_with_info:
-        for other_tree_to_compate in trees_with_info:
-            if other_tree_to_compate is not tree_with_info:
-                for subtree in other_tree_to_compate.get_tree_brak_table():
-                    trees_with_info.check_if_tree_break_table_contains(subtree)
+        for other_tree_to_compare in trees_with_info:
+            if other_tree_to_compare is not tree_with_info:
+                for subtree in other_tree_to_compare.get_tree_break_table():
+                    tree_with_info.check_if_tree_break_table_contains(subtree)
 
     # Zliczenie tych, które powtarzaja sie wiecej niz x% razy i dodanie ich do drzewa konsensusu
     num_of_similar = percent * num_of_trees
+    consensus_tree = Tree()
     for tree_with_info in trees_with_info:
         for best_tree_break in tree_with_info.get_tree_breaks_that_has_more_then_x_percent_similar(percent):
             if subtree_is_not_a_child_of_already_added(consensus_tree,best_tree_break):
-                # Dodaj do drzewa konsensusu
+                consensus_tree.add_child(best_tree_break)
 
-
-
-    pass
+    return consensus_tree
 
 def subtree_is_not_a_child_of_already_added(self, consensus_tree, subtree):
 
@@ -104,5 +103,6 @@ if __name__ == "__main__":
 
         tree.print_plot()
 
-    find_consensus_tree(trees, percent)
+    consensus_tree = find_consensus_tree(trees, percent)
+    Drawer().drawTree(consensus_tree)
 
