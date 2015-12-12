@@ -2,6 +2,10 @@
 
 import dendropy
 import re
+import sys
+from projekt1.Drawer import Drawer
+from projekt1.Tree_with_info import Tree_with_info
+
 
 def loadData(path):
     """
@@ -9,9 +13,15 @@ def loadData(path):
     return: tree - drzewo w formacie newick (string)
     """
     file = open(path, 'r')
-    tree = file.read()
+    trees = []
+    while True:
+        tree = file.readline()
+        if tree is "":
+            break
+        trees.append(tree)
+
     file.close()
-    return tree
+    return trees
 
 def checkTree(tree):
     """ Sprawdza zgodność rodziny klastrów
@@ -31,89 +41,68 @@ def checkTree(tree):
 
     return True
 
-def drawTree(tree):
-    """
-    :param tree - drzewo z dendropy
-    :return:
-    """
-    #leavesNumber = len(tree.leaf_edges())
-    #width = leavesNumber * 2 - 1
-    drawNode(tree.seed_node, 0, [], "MID", "")
+
+def find_consensus_tree(trees, precent):
+
+    consensus_tree = None
+    trees_with_info = []
+    num_of_trees = len(trees)
+    # Tworzenie wszystkich rozbić drzewa i wstawianie ich do tablicy
+    for tree in trees:
+        tree_with_info = Tree_with_info(tree)
+        trees_with_info.append(trees_with_info)
+
+    # Porówanie każdgo elementu z tablicy z innymi tablicami
+
+    for tree_with_info in trees_with_info:
+        for other_tree_to_compate in trees_with_info:
+            if other_tree_to_compate is not tree_with_info:
+                for subtree in other_tree_to_compate.get_tree_brak_table():
+                    trees_with_info.check_if_tree_break_table_contains(subtree)
+
+    # Zliczenie tych, które powtarzaja sie wiecej niz x% razy i dodanie ich do drzewa konsensusu
+    num_of_similar = percent * num_of_trees
+    for tree_with_info in trees_with_info:
+        for best_tree_break in tree_with_info.get_tree_breaks_that_has_more_then_x_percent_similar(percent):
+            if subtree_is_not_a_child_of_already_added(consensus_tree,best_tree_break):
+                # Dodaj do drzewa konsensusu
 
 
-def drawNode(node, depth, edges, nodeType, side):
-    INDENT = 4
 
-    children = node.child_nodes()
-    childrenNumber = len(children)
+    pass
 
-    if childrenNumber != 0 and depth != 0 and side == "L" and (depth not in edges):
-        edges.append(depth)
+def subtree_is_not_a_child_of_already_added(self, consensus_tree, subtree):
 
-    for i in range(0, (int)(childrenNumber/2), 1):
-        type = "MID"
-        if i == 0:
-            type = "FIRST"
-        drawNode(children[i], depth+1, edges, type, "R")
+    subtree_as_a_string = subtree.as_string(schema="newick")
+    if(subtree_as_a_string in consensus_tree.as_string(schema="newick")):
+        return False
+    return True
 
 
-    if (side == "L") and (depth in edges) and (nodeType == "LAST"):
-        edges.remove(depth)
+if __name__ == "__main__":
+    percent = sys.argv.pop()
+    file_path = sys.argv.pop()
 
-    sign = "|"
-    if nodeType == "FIRST":
-        sign = "/"
-    elif nodeType == "LAST":
-        sign = "\\"
-    elif (depth in edges):
-        sign = ""
+    newickTrees = loadData(file_path)
+    trees = []
+    for newickTree in newickTrees:
+        if not checkTree(newickTree):
+            print("Rodzina klastrów nie jest zgodna.")
+            exit()
+        else:
+            print("Rodzina klastrów jest zgodna.")
 
+        print("\n\n")
 
-    currentIndent = 0
-    sorted(edges, key=int)
-    for i in range(len(edges)):
-        print(" " * (edges[i] * INDENT - currentIndent), end="|")
-        currentIndent = edges[i] * INDENT + 1
+        tree = dendropy.Tree.get(
+                data=newickTree,
+                schema="newick")
+        trees.append(tree)
+        Drawer().drawTree(tree)
 
-    print(" " * (depth * INDENT - currentIndent), end=sign)
-    print("-" * (INDENT-1), end="")
+        print("\n\n")
 
-    if node.taxon:
-        print(str(node.taxon).replace('\'', ""))
-    elif node.label:
-        print(node.label)
-    else:
-        print("+")
+        tree.print_plot()
 
+    find_consensus_tree(trees, percent)
 
-    if childrenNumber != 0 and depth != 0 and side == "R" and (depth not in edges):
-        edges.append(depth)
-
-    for i in range((int)(childrenNumber/2), childrenNumber, 1):
-        type = "MID"
-        if i == childrenNumber - 1:
-            type = "LAST"
-        drawNode(children[i], depth+1, edges, type, "L")
-
-    if (side == "R") and (depth in edges):
-        edges.remove(depth)
-
-
-newickTree = loadData('../tree.txt')
-if not checkTree(newickTree):
-    print("Rodzina klastrów nie jest zgodna.")
-    exit()
-else:
-    print("Rodzina klastrów jest zgodna.")
-
-print("\n\n")
-
-tree = dendropy.Tree.get(
-        data=newickTree,
-        schema="newick")
-
-drawTree(tree)
-
-print("\n\n")
-
-tree.print_plot()
