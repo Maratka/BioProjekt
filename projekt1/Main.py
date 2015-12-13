@@ -2,11 +2,13 @@
 
 import dendropy
 import re
+from projekt1 import draw
+import projekt1.draw
 import sys
 from projekt1.Comparer import Comparer
 from projekt1.Converter import Converter
-from projekt1.Drawer import Drawer
 from projekt1.Cluster_Tree import Cluster_Tree
+from projekt1.break_converter import BreakConverter
 from dendropy import Tree, TaxonNamespace
 
 def loadData(path):
@@ -88,6 +90,7 @@ if __name__ == "__main__":
 
     newickTrees = loadData(file_path)
     trees = []
+    break_trees = []
     for newickTree in newickTrees:
         if not checkTree(newickTree):
             print("Rodzina klastrów nie jest zgodna.")
@@ -101,12 +104,20 @@ if __name__ == "__main__":
                 data=newickTree,
                 schema="newick")
         trees.append(tree)
-        Drawer().drawTree(tree)
+        draw.drawTree(tree)
+        break_tree = BreakConverter().tree_to_break_tree(tree)
+        break_trees.append(break_tree)
 
         print("\n\n")
 
-        tree.print_plot()
+        # tree.print_plot()
+
+    for break_tree_index in range(len(break_trees)):
+        if break_tree_index+1 < len(break_trees):
+            distance = break_trees[break_tree_index].get_rf_distance(break_trees[break_tree_index+1])
+            print(str(distance))
 
     consensus_tree = find_consensus_tree(trees, percent)
-    Drawer().drawTree(consensus_tree)
+    print("Consensus tree \n\n")
+    draw.drawTree(consensus_tree)
 
