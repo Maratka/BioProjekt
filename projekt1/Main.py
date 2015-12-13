@@ -5,6 +5,7 @@ import re
 import sys
 from projekt1.Drawer import Drawer
 from projekt1.Tree_with_info import Tree_with_info
+from projekt1.break_converter import BreakConverter
 
 
 def loadData(path):
@@ -65,6 +66,7 @@ def find_consensus_tree(trees, precent):
     for tree_with_info in trees_with_info:
         for best_tree_break in tree_with_info.get_tree_breaks_that_has_more_then_x_percent_similar(percent):
             if subtree_is_not_a_child_of_already_added(consensus_tree,best_tree_break):
+                pass
                 # Dodaj do drzewa konsensusu
 
 
@@ -85,6 +87,7 @@ if __name__ == "__main__":
 
     newickTrees = loadData(file_path)
     trees = []
+    break_trees = []
     for newickTree in newickTrees:
         if not checkTree(newickTree):
             print("Rodzina klastrów nie jest zgodna.")
@@ -99,10 +102,17 @@ if __name__ == "__main__":
                 schema="newick")
         trees.append(tree)
         Drawer().drawTree(tree)
+        break_tree = BreakConverter().tree_to_break_tree(tree)
+        break_trees.append(break_tree)
 
         print("\n\n")
 
         tree.print_plot()
+
+    for break_tree_index in range(len(break_trees)):
+        if break_tree_index+1 < len(break_trees):
+            distance = break_trees[break_tree_index].get_rf_distance(break_trees[break_tree_index+1])
+            print(str(distance))
 
     find_consensus_tree(trees, percent)
 
