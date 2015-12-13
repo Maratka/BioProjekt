@@ -3,8 +3,10 @@
 import dendropy
 import re
 import sys
+from projekt1.Comparer import Comparer
+from projekt1.Converter import Converter
 from projekt1.Drawer import Drawer
-from projekt1.Tree_with_info import Tree_with_info
+from projekt1.Cluster_Tree import Cluster_Tree
 from dendropy import Tree, TaxonNamespace
 
 def loadData(path):
@@ -45,38 +47,40 @@ def checkTree(tree):
 def find_consensus_tree(trees, precent):
 
     consensus_tree = None
-    trees_with_info = []
+    cluster_trees = []
     num_of_trees = len(trees)
     # Tworzenie wszystkich rozbić drzewa i wstawianie ich do tablicy
     for tree in trees:
-        tree_with_info = Tree_with_info(tree)
-        trees_with_info.append(tree_with_info)
+        cluster_tree = Cluster_Tree(tree)
+        cluster_trees.append(cluster_tree)
 
     # Porówanie każdgo elementu z tablicy z innymi tablicami
-
-    for tree_with_info in trees_with_info:
-        for other_tree_to_compare in trees_with_info:
-            if other_tree_to_compare is not tree_with_info:
-                for subtree in other_tree_to_compare.get_tree_break_table():
-                    tree_with_info.check_if_tree_break_table_contains(subtree)
+    for cluster_tree in cluster_trees:
+        for other_cluster_tree in cluster_trees:
+            if other_cluster_tree is not cluster_tree:
+                for cluster in other_cluster_tree.get_cluster_list():
+                    cluster_tree.count_if_contain_the_same(cluster)
 
     # Zliczenie tych, które powtarzaja sie wiecej niz x% razy i dodanie ich do drzewa konsensusu
-    num_of_similar = percent * num_of_trees
-    consensus_tree = Tree()
-    for tree_with_info in trees_with_info:
-        for best_tree_break in tree_with_info.get_tree_breaks_that_has_more_then_x_percent_similar(percent):
-            if subtree_is_not_a_child_of_already_added(consensus_tree,best_tree_break):
-                consensus_tree.add_child(best_tree_break)
+    num_of_similar = float(percent) * num_of_trees
+    # wybranie tych klastrow z kazdego dzrzewa, ktor emaja wiecej niz percent procent zgodnosci i nie powtarzaja sie
+    consensus_tree = Cluster_Tree(None)
+    for cluster_tree in cluster_trees:
+        for cluster in cluster_tree.get_cluster_list():
+            if cluster.found > num_of_similar:
+                if not cluster_is_in_tree(cluster, consensus_tree):
+                    consensus_tree.add_cluster_to_cluster_list(cluster)
 
-    return consensus_tree
+    # przekonvertowanie tego drzewa na dendropy
+    consensus_tree_dendropy = Converter().get_dendropy_tree(consensus_tree)
 
-def subtree_is_not_a_child_of_already_added(self, consensus_tree, subtree):
+    return consensus_tree_dendropy
 
-    subtree_as_a_string = subtree.as_string(schema="newick")
-    if(subtree_as_a_string in consensus_tree.as_string(schema="newick")):
-        return False
-    return True
-
+def cluster_is_in_tree(cluster, cluster_tree):
+    for cluster_in_tree in cluster_tree.get_cluster_list():
+        if Comparer().are_the_same(cluster_in_tree,cluster):
+            return True
+    return False
 
 if __name__ == "__main__":
     percent = sys.argv.pop()
