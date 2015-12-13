@@ -1,5 +1,4 @@
 from dendropy import Tree, Node
-from projekt1.New_Node import New_Node
 
 __author__ = 'Gosia'
 from projekt1.Cluster import Cluster
@@ -39,14 +38,14 @@ class Converter:
             if cluster.taxon is not None:
                 leafs.append(cluster)
             if cluster.taxon is None:
-                nodes.append(New_Node(cluster))
+                nodes.append(cluster)
 
-        nodes.sort(key=lambda x: x.num_leafs)
+        nodes.sort(key=lambda x: len(x.clusters))
         created_nodes = []
         for node in nodes:
 
             created_node = Node()
-            for leaf in node.node.clusters:
+            for leaf in node.clusters:
                 if not self.is_leaf_in_leafs(leaf,leafs):
                     sub_created_node, created_nodes = self.find_created_node_with_leaf(created_nodes, leaf)
                     if sub_created_node is not None:
