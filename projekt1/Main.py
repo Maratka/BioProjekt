@@ -90,7 +90,9 @@ if __name__ == "__main__":
             distance = break_trees[break_tree_index].get_rf_distance(break_trees[break_tree_index+1])
             print(str(distance))
 
+    #Znajdowanie drzewa konsensusu o podanym procencie zgodności
     consensus_tree = consensus_tree_file.find_consensus_tree(trees, percent)
     print("Consensus tree \n\n")
+    #Wypisywanie drzewa konsensusu
     draw.drawTree(consensus_tree)
 
