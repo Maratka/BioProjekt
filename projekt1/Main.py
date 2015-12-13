@@ -2,14 +2,13 @@
 
 import dendropy
 import re
-from projekt1 import draw
-import projekt1.draw
 import sys
+from projekt1 import draw
+from projekt1.tree_pruning import pruneTree
 from projekt1.Comparer import Comparer
 from projekt1.Converter import Converter
 from projekt1.Cluster_Tree import Cluster_Tree
 from projekt1.break_converter import BreakConverter
-from dendropy import Tree, TaxonNamespace
 
 def loadData(path):
     """
@@ -105,6 +104,16 @@ if __name__ == "__main__":
                 schema="newick")
         trees.append(tree)
         draw.drawTree(tree)
+        print("\n\n")
+
+        leaves_str = input("Podaj podzbiór liści do którego drzewo ma być obcięte (rozdzielone spacją):\n")
+        if leaves_str:
+            leaves = leaves_str.split(" ")
+            print("\n")
+            prunedTree = pruneTree(dendropy.Tree(tree), leaves)
+            if prunedTree:
+                draw.drawTree(prunedTree)
+
         break_tree = BreakConverter().tree_to_break_tree(tree)
         break_trees.append(break_tree)
 
