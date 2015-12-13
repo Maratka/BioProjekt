@@ -1,4 +1,4 @@
-from projekt1.Tree_break_counter import Tree_break_counter
+from Tree_break_counter import Tree_break_counter
 
 __author__ = 'Gosia'
 

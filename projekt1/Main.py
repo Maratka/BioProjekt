@@ -4,9 +4,8 @@ import dendropy
 import re
 import draw
 import sys
-from projekt1.Drawer import Drawer
-from projekt1.Tree_with_info import Tree_with_info
-from projekt1.break_converter import BreakConverter
+from Tree_with_info import Tree_with_info
+from break_converter import BreakConverter
 
 from dendropy import Tree, TaxonNamespace
 
@@ -101,7 +100,6 @@ if __name__ == "__main__":
                 data=newickTree,
                 schema="newick")
         trees.append(tree)
-        # Drawer().drawTree(tree)
         draw.drawTree(tree)
         break_tree = BreakConverter().tree_to_break_tree(tree)
         break_trees.append(break_tree)

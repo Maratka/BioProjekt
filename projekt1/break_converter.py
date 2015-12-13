@@ -1,5 +1,5 @@
-from projekt1.break_tree import BreakTree
-from projekt1.tree_break_part import TreeBreakPart
+from break_tree import BreakTree
+from tree_break_part import TreeBreakPart
 
 
 class BreakConverter(object):
