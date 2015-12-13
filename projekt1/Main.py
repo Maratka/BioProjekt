@@ -2,6 +2,7 @@
 
 import dendropy
 import re
+import draw
 import sys
 from projekt1.Drawer import Drawer
 from projekt1.Tree_with_info import Tree_with_info
@@ -100,13 +101,14 @@ if __name__ == "__main__":
                 data=newickTree,
                 schema="newick")
         trees.append(tree)
-        Drawer().drawTree(tree)
+        # Drawer().drawTree(tree)
+        draw.drawTree(tree)
         break_tree = BreakConverter().tree_to_break_tree(tree)
         break_trees.append(break_tree)
 
         print("\n\n")
 
-        tree.print_plot()
+        # tree.print_plot()
 
     for break_tree_index in range(len(break_trees)):
         if break_tree_index+1 < len(break_trees):
