@@ -6,6 +6,7 @@ import draw
 import sys
 from Tree_with_info import Tree_with_info
 from break_converter import BreakConverter
+from tree_pruning import pruneTree
 
 from dendropy import Tree, TaxonNamespace
 
@@ -101,12 +102,23 @@ if __name__ == "__main__":
                 schema="newick")
         trees.append(tree)
         draw.drawTree(tree)
+        print("\n\n")
+
+        leaves_str = input("Podaj podzbiór liści do którego drzewo ma być obcięte (rozdzielone spacją):\n")
+        if leaves_str:
+            leaves = leaves_str.split(" ")
+            prunedTree = pruneTree(tree, leaves)
+            if prunedTree:
+                draw.drawTree(prunedTree)
+
         break_tree = BreakConverter().tree_to_break_tree(tree)
         break_trees.append(break_tree)
 
         print("\n\n")
 
         # tree.print_plot()
+
+
 
     for break_tree_index in range(len(break_trees)):
         if break_tree_index+1 < len(break_trees):
@@ -115,4 +127,3 @@ if __name__ == "__main__":
 
     # consensus_tree = find_consensus_tree(trees, percent)
     # Drawer().drawTree(consensus_tree)
-
