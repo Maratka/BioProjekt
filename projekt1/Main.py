@@ -69,7 +69,7 @@ def find_consensus_tree(trees, precent):
     consensus_tree = Cluster_Tree(None)
     for cluster_tree in cluster_trees:
         for cluster in cluster_tree.get_cluster_list():
-            if cluster.found > num_of_similar:
+            if cluster.found >= num_of_similar:
                 if not cluster_is_in_tree(cluster, consensus_tree):
                     consensus_tree.add_cluster_to_cluster_list(cluster)
 
