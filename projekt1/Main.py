@@ -109,7 +109,8 @@ if __name__ == "__main__":
         leaves_str = input("Podaj podzbiór liści do którego drzewo ma być obcięte (rozdzielone spacją):\n")
         if leaves_str:
             leaves = leaves_str.split(" ")
-            prunedTree = pruneTree(tree, leaves)
+            print("\n")
+            prunedTree = pruneTree(dendropy.Tree(tree), leaves)
             if prunedTree:
                 draw.drawTree(prunedTree)
 
@@ -120,8 +121,6 @@ if __name__ == "__main__":
 
         # tree.print_plot()
 
-
-
     for break_tree_index in range(len(break_trees)):
         if break_tree_index+1 < len(break_trees):
             distance = break_trees[break_tree_index].get_rf_distance(break_trees[break_tree_index+1])
@@ -130,3 +129,4 @@ if __name__ == "__main__":
     consensus_tree = find_consensus_tree(trees, percent)
     print("Consensus tree \n\n")
     draw.drawTree(consensus_tree)
+
