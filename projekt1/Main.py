@@ -4,6 +4,8 @@ import dendropy
 import re
 import sys
 from projekt1 import draw
+from projekt1.common_extend import CommonExtend
+from projekt1.tree_compatibility import TreeCompatibility
 from projekt1.tree_pruning import pruneTree
 from projekt1.Comparer import Comparer
 from projekt1.Converter import Converter
@@ -66,6 +68,9 @@ if __name__ == "__main__":
         tree = dendropy.Tree.get(
                 data=newickTree,
                 schema="newick")
+        if not TreeCompatibility().check_tree_compatibility(tree):
+            print("Niezgodnosc rodziny klastrow")
+            exit()
         trees.append(tree)
         draw.drawTree(tree)
         print("\n\n")
@@ -90,9 +95,24 @@ if __name__ == "__main__":
             distance = break_trees[break_tree_index].get_rf_distance(break_trees[break_tree_index+1])
             print(str(distance))
 
-    #Znajdowanie drzewa konsensusu o podanym procencie zgodności
-    consensus_tree = consensus_tree_file.find_consensus_tree(trees, percent)
-    print("Consensus tree \n\n")
-    #Wypisywanie drzewa konsensusu
-    draw.drawTree(consensus_tree)
+    try:
+        # Znajdowanie drzewa konsensusu o podanym procencie zgodności
+        consensus_tree = consensus_tree_file.find_consensus_tree(trees, percent)
+        print("Consensus tree \n\n")
+        #Wypisywanie drzewa konsensusu
+        draw.drawTree(consensus_tree)
+    except Exception as error:
+        # Jezeli wyjatek -> rodzina klastrow niezgodna dla drzewa konsensusu
+        print(str(error))
+
+    try:
+        # Znajdowanie wspolnego rozszerzenia
+        common_extend = CommonExtend().get_common_extend(trees)
+        #Wypisywanie wspolnego rozszerzenia
+        draw.drawTree(common_extend)
+    except Exception as error:
+        # Jezeli wyjatek -> nie ma wspolnego rozszerzenia bo rodzina klastrow niezgodna
+        print("Nie istnieje wspolne rozszerzenie")
+
+
 

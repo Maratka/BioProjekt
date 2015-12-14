@@ -2,25 +2,25 @@ __author__ = 'Gosia'
 
 class Comparer:
 
-    #Porównanie, czy dwa klastry s¹ te same
+    #Porï¿½wnanie, czy dwa klastry sï¿½ te same
     def are_the_same(self, cluster_1, cluster_2):
 
-        # Je¿eli ich Taxony nie s¹ None, to na pewno nie porównujemy wêz³ów
+        # Jeï¿½eli ich Taxony nie sï¿½ None, to na pewno nie porï¿½wnujemy wï¿½zï¿½ï¿½w
         if cluster_1.taxon is not None and cluster_2.taxon is not None:
-            #Je¿eli dwa liœcie nie maj¹ takich samych taxonów, to nie s¹ takie same
+            #Jeï¿½eli dwa liï¿½cie nie majï¿½ takich samych taxonï¿½w, to nie sï¿½ takie same
             if cluster_1.taxon.label is not cluster_2.taxon.label:
                 return False
             else:
                 return True
         elif cluster_1.taxon is None and cluster_2.taxon is None:
-            #Je¿eli ich taxony s¹ None to s¹ to wêz³y
-            #Je¿eli listy liœci klastrów maj¹ ró¿ne d³ugoœci, to na pewno nie s¹ te same
+            #Jeï¿½eli ich taxony sï¿½ None to sï¿½ to wï¿½zï¿½y
+            #Jeï¿½eli listy liï¿½ci klastrï¿½w majï¿½ rï¿½ne dï¿½ugoï¿½ci, to na pewno nie sï¿½ te same
             if len(cluster_1.clusters) is not len(cluster_2.clusters):
                 return False
 
-            #Porównanie listy liœci jednego klastra i drugiego
-            #Je¿eli s¹ zgodne to s¹ takie same
-            #Inaczej klastry s¹ ró¿ne
+            #Porï¿½wnanie listy liï¿½ci jednego klastra i drugiego
+            #Jeï¿½eli sï¿½ zgodne to sï¿½ takie same
+            #Inaczej klastry sï¿½ rï¿½ne
             found_in_other = 0
             expected_found = len(cluster_1.clusters)
 
@@ -31,5 +31,40 @@ class Comparer:
 
             if found_in_other is expected_found:
                 return True
-        #Jezeli jeden jest wêz³em, a drugi liœciem, to na pewno nie s¹ te same
+        #Jezeli jeden jest wï¿½zï¿½em, a drugi liï¿½ciem, to na pewno nie sï¿½ te same
         return False
+
+    def is_cluster_included_in_another(self, included_cluster, cluster):
+        if included_cluster.taxon and cluster.taxon:
+            if included_cluster.taxon.label == cluster.taxon.label:
+                return True
+            else:
+                return False
+        elif (not included_cluster.taxon and cluster.taxon) or (included_cluster.taxon and not cluster.taxon):
+            return False
+
+        for included_leaf in included_cluster.clusters:
+            found_leaf = False
+            for leaf in cluster.clusters:
+                if included_leaf.taxon.label == leaf.taxon.label:
+                    found_leaf = True
+                    break
+            if not found_leaf:
+                return False
+        return True
+
+    def have_clusters_common_elements(self, first_cluster, second_cluster):
+        if first_cluster.taxon and second_cluster.taxon:
+            if first_cluster.taxon.label == second_cluster.taxon.label:
+                return True
+            else:
+                return False
+        elif (not first_cluster.taxon and second_cluster.taxon) or (first_cluster.taxon and not second_cluster.taxon):
+            return False
+
+        for first_leaf in first_cluster.clusters:
+            for second_leaf in second_cluster.clusters:
+                if first_leaf.taxon.label == second_leaf.taxon.label:
+                    return True
+        return False
+
