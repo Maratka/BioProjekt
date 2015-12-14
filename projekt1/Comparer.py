@@ -35,12 +35,22 @@ class Comparer:
         return False
 
     def is_cluster_included_in_another(self, included_cluster, cluster):
+        """Czy klaster zawiera sie w drugim? Jezeli sa liscmi to sprawdz taxony.
+        Jezli tylko jeden ten, ktory ma sie zawierac jest liscie to poszukaj jego w drugim.
+        Jezeli tylko ten drugi jest lisciem to nie.
+        Jezeli zawieraja wiele lisci to poszukaj wszystkie elementy pierwszego w drugim
+        """
         if included_cluster.taxon and cluster.taxon:
             if included_cluster.taxon.label == cluster.taxon.label:
                 return True
             else:
                 return False
-        elif (not included_cluster.taxon and cluster.taxon) or (included_cluster.taxon and not cluster.taxon):
+        elif included_cluster.taxon and not cluster.taxon:
+            for leaf in cluster.clusters:
+                if leaf.taxon.label == included_cluster.taxon.label:
+                    return True
+            return False
+        elif not included_cluster.taxon and cluster.taxon:
             return False
 
         for included_leaf in included_cluster.clusters:
@@ -54,12 +64,24 @@ class Comparer:
         return True
 
     def have_clusters_common_elements(self, first_cluster, second_cluster):
+        """Czy klastry maja wspolne elementy? Jezeli sa liscmi to porownaj taxony
+        Jezeli tylko jeden jest lisciem to poszukaj tego liscia w drugim. Jezeli zawieraja wiele lisci
+        to poszukaj jakiegokolwiek z pierwszego w drugim
+        """
         if first_cluster.taxon and second_cluster.taxon:
             if first_cluster.taxon.label == second_cluster.taxon.label:
                 return True
             else:
                 return False
-        elif (not first_cluster.taxon and second_cluster.taxon) or (first_cluster.taxon and not second_cluster.taxon):
+        elif not first_cluster.taxon and second_cluster.taxon:
+            for first_leaf in first_cluster.clusters:
+                if second_cluster.taxon.label == first_leaf.taxon.label:
+                    return True
+            return False
+        elif first_cluster.taxon and not second_cluster.taxon:
+            for second_leaf in second_cluster.clusters:
+                if first_cluster.taxon.label == second_leaf.taxon.label:
+                    return True
             return False
 
         for first_leaf in first_cluster.clusters:
