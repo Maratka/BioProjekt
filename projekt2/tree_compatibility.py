@@ -22,5 +22,10 @@ class TreeCompatibility(object):
         return True
 
     def check_break_tree_compatibility(self, break_tree):
+        """Sprawdzenie czy rodzina rozbic jest zgodna"""
+        for i, break_part in enumerate(break_tree.tree_break_parts):
+            for j in range(i+1, len(break_tree.tree_break_parts)):
+                if not break_part.check_break_compatibility(break_tree.tree_break_parts[j]):
+                    return False
         return True
 

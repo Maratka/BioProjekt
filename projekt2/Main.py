@@ -48,7 +48,6 @@ def checkTree(tree):
     return True
 
 
-
 if __name__ == "__main__":
     percent = sys.argv.pop()
     file_path = sys.argv.pop()
@@ -57,21 +56,29 @@ if __name__ == "__main__":
     trees = []
     break_trees = []
     for newickTree in newickTrees:
+        """
         if not checkTree(newickTree):
             print("Rodzina klastrów nie jest zgodna.")
             exit()
         else:
             print("Rodzina klastrów jest zgodna.")
-
+        """
         print("\n\n")
 
         tree = dendropy.Tree.get(
                 data=newickTree,
                 schema="newick",
                 rooting='force-unrooted')
-        # if not TreeCompatibility().check_tree_compatibility(tree):
-            # print("Niezgodnosc rodziny klastrow")
-            # exit()
+
+        break_tree = BreakConverter().tree_to_break_tree(tree)
+        if TreeCompatibility().check_break_tree_compatibility(break_tree):
+            print("Rodzina rozbić jest zgodna")
+        else:
+            print("Rodzina rozbić jest zgodna")
+
+
+        break_trees.append(break_tree)
+
         trees.append(tree)
         draw.drawTree(tree)
         print("\n\n")
@@ -84,9 +91,6 @@ if __name__ == "__main__":
             prunedTree = pruneTree(dendropy.Tree(tree), leaves)
             if prunedTree:
                 draw.drawTree(prunedTree)
-
-        break_tree = BreakConverter().tree_to_break_tree(tree)
-        break_trees.append(break_tree)
 
         print("\n\n")
 

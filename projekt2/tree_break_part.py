@@ -55,5 +55,32 @@ class TreeBreakPart(object):
                 return False
         return True
 
+    def check_break_compatibility(self, tree_break_part):
+        """
+        Sprawdzenie czy rozbicia sa zgodne
+        Rozbicia {A, B} i {C, D} sa zgodne jesli dokladnie jeden ze zbiorow A*C, A*D, B*C, B*D jest pusty
+        """
+        disjoint_sets = 0
+        if self.check_disjoint_sets(self.leaves_set_a, tree_break_part.leaves_set_a):
+            disjoint_sets += 1
+        if self.check_disjoint_sets(self.leaves_set_a, tree_break_part.leaves_set_b):
+            disjoint_sets += 1
+        if self.check_disjoint_sets(self.leaves_set_b, tree_break_part.leaves_set_a):
+            disjoint_sets += 1
+        if self.check_disjoint_sets(self.leaves_set_b, tree_break_part.leaves_set_b):
+            disjoint_sets += 1
 
+        if disjoint_sets == 1:
+            return True
 
+        return False
+
+    @staticmethod
+    def check_disjoint_sets(set_a, set_b):
+        """Sprawdzenie czy zbiory sa rozlaczne"""
+        for leaf_a in set_a:
+            for leaf_b in set_b:
+                if leaf_a.taxon == leaf_b.taxon:
+                    return False
+
+        return True
