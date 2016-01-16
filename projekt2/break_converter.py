@@ -34,10 +34,13 @@ class BreakConverter(object):
 
             # utworz z tych lisci obiekt TreeBreakPart i dodaj do listy rozbic
             new_tree_break_part = TreeBreakPart(leaves_set_a, leaves_set_b)
+            append_new_tree_break_part = True
             for break_tree_part in break_tree_parts:
                 if break_tree_part.equals_to(new_tree_break_part):
+                    append_new_tree_break_part = False
                     break
-            break_tree_parts.append(new_tree_break_part)
+
+            if append_new_tree_break_part:
+                break_tree_parts.append(new_tree_break_part)
         # z listy rozbic stworz drzewo (obiekt) w postaci rozbic i zwroc
         return BreakTree(break_tree_parts)
-
