@@ -1,5 +1,5 @@
-from projekt1.break_converter import BreakConverter
-from projekt1.break_tree import BreakTree
+from projekt2.break_converter import BreakConverter
+from projekt2.break_tree import BreakTree
 from projekt2.Cluster_Tree import Cluster_Tree
 from projekt2.Comparer import Comparer
 from projekt2.Converter import Converter
@@ -40,10 +40,10 @@ def find_consensus_tree(trees, percent):
                     consensus_tree.tree_break_parts.append(break_part)
 
     # Sprawdzenie czy w znalezionym drzewie konsensusu rodzina klastrow jest zgodna
-    if not TreeCompatibility().check_cluster_tree_compatibility(consensus_tree):
+    if not TreeCompatibility().check_break_tree_compatibility(consensus_tree):
         raise Exception("Rodzina klastrow nie jest zgodna dla drzewa konsensusu")
     # Przekonwertowanie drzewa z�o�onego z klastr�w na zwyk�e drzewo - grafowe
-    consensus_tree_dendropy = Converter().get_dendropy_tree(consensus_tree)
+    consensus_tree_dendropy = Converter().get_dendropy_tree_from_break_tree(consensus_tree)
 
     return consensus_tree_dendropy
 

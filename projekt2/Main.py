@@ -111,6 +111,8 @@ if __name__ == "__main__":
         # Znajdowanie wspolnego rozszerzenia
         common_extend = CommonExtend().get_common_extend(trees)
         #Wypisywanie wspolnego rozszerzenia
+        print('\n\n')
+        print('Wspolne rozszerzenie: \n\n')
         draw.drawTree(common_extend)
     except Exception as error:
         # Jezeli wyjatek -> nie ma wspolnego rozszerzenia bo rodzina klastrow niezgodna

@@ -21,3 +21,6 @@ class TreeCompatibility(object):
                 return False
         return True
 
+    def check_break_tree_compatibility(self, break_tree):
+        return True
+

@@ -5,38 +5,38 @@ from Cluster import Cluster
 
 class Converter:
 
-    #Metoda zwracaj¹ca listê klastrów dla drzewa
+    #Metoda zwracajï¿½ca listï¿½ klastrï¿½w dla drzewa
     def get_cluster_list(self,tree):
         return self.prepare_cluster_list_for_node(tree.seed_node)
 
-    #Przygotowanie listy klastrów, jako reprezanetacji drzewa - rekurancja
+    #Przygotowanie listy klastrï¿½w, jako reprezanetacji drzewa - rekurancja
     def prepare_cluster_list_for_node(self, node):
         cluster_list = []
-        #Je¿eli element drzewa jest liœciem, to do listy klastrów dodajemy klaster, który ma nazwê tego liœcia - taxon i tego liscia w œrodku
+        #Jeï¿½eli element drzewa jest liï¿½ciem, to do listy klastrï¿½w dodajemy klaster, ktï¿½ry ma nazwï¿½ tego liï¿½cia - taxon i tego liscia w ï¿½rodku
         if node.is_leaf():
             taxon = node.taxon
             cluster = Cluster(taxon, node)
             cluster_list.append(cluster)
         else:
-            #Je¿eli dany wêze³ drzewa jest wêz³em, to do listy dodawany jest klaster z brakiem nazwy - taxon, a lista to lista wszystkich liœci, do których mo¿na od niego dojœæ
+            #Jeï¿½eli dany wï¿½zeï¿½ drzewa jest wï¿½zï¿½em, to do listy dodawany jest klaster z brakiem nazwy - taxon, a lista to lista wszystkich liï¿½ci, do ktï¿½rych moï¿½na od niego dojï¿½ï¿½
             leafs = node.leaf_nodes()
             taxon = node.taxon
             cluster = Cluster(taxon,leafs)
             childs = node.child_nodes()
             cluster_list.append(cluster)
-            #Nastêpnie dla ka¿dego jego dziecka wykonywana jest ta sama funkcja
+            #Nastï¿½pnie dla kaï¿½dego jego dziecka wykonywana jest ta sama funkcja
             for child in childs:
                 child_cluster = self.prepare_cluster_list_for_node(child)
                 cluster_list += child_cluster
 
-        #Na koniec zwracana jest lista klastrów
+        #Na koniec zwracana jest lista klastrï¿½w
         return cluster_list
 
-    #Konwersja drzewa z³o¿onego z klastrów na drzewo grafowe
+    #Konwersja drzewa zï¿½oï¿½onego z klastrï¿½w na drzewo grafowe
     def get_dendropy_tree(self, cluster_tree):
 
         consensus_tree_dendropy =  Tree()
-        #Rozró¿nienie liœci od wêz³ów i zapisanie ich do dwóch osobnych tablic
+        #Rozrï¿½nienie liï¿½ci od wï¿½zï¿½ï¿½w i zapisanie ich do dwï¿½ch osobnych tablic
         leafs = []
         nodes = []
         for cluster in cluster_tree.get_cluster_list():
@@ -44,39 +44,39 @@ class Converter:
                 leafs.append(cluster)
             if cluster.taxon is None:
                 nodes.append(cluster)
-        #Posortowanie listy wêz³ów po to, aby zacz¹æ przeszukiwaæ je od tych, które maj¹ najmniej liœci i budowaæ drzewo od do³u
+        #Posortowanie listy wï¿½zï¿½ï¿½w po to, aby zaczï¿½ï¿½ przeszukiwaï¿½ je od tych, ktï¿½re majï¿½ najmniej liï¿½ci i budowaï¿½ drzewo od doï¿½u
         nodes.sort(key=lambda x: len(x.clusters))
-        #Tablica tymczasowych utworzonych ju¿ wêz³ów, z których budowane jest drzewo
+        #Tablica tymczasowych utworzonych juï¿½ wï¿½zï¿½ï¿½w, z ktï¿½rych budowane jest drzewo
         created_nodes = []
         for node in nodes:
 
-            #Dla ka¿ego znalezionego wêz³a, tworzony jest wêze³ drzewa
-            # a nastêpnie dodawane s¹ do niego jego liœcie
+            #Dla kaï¿½ego znalezionego wï¿½zï¿½a, tworzony jest wï¿½zeï¿½ drzewa
+            # a nastï¿½pnie dodawane sï¿½ do niego jego liï¿½cie
 
             created_node = Node()
             for leaf in node.clusters:
-                #Je¿eli jego liœci nie jest na liœcie lisci, oznacza to, ¿e zosta³ ju¿ wczeœniej zu¿yty
-                #Czyli znajduje siê ju¿ w tymczasowym wêŸle i nale¿y jako dziecko dodaæ ten tymczasowy wêze³
+                #Jeï¿½eli jego liï¿½ci nie jest na liï¿½cie lisci, oznacza to, ï¿½e zostaï¿½ juï¿½ wczeï¿½niej zuï¿½yty
+                #Czyli znajduje siï¿½ juï¿½ w tymczasowym wï¿½le i naleï¿½y jako dziecko dodaï¿½ ten tymczasowy wï¿½zeï¿½
                 if not self.is_leaf_in_leafs(leaf,leafs):
-                    # Nale¿y znaleŸæ stworzony wêze³ z liœciem i dodaæ go jako dziecko do nowego wêz³a
-                    # A zu¿yty wêze³ usun¹æ
+                    # Naleï¿½y znaleï¿½ï¿½ stworzony wï¿½zeï¿½ z liï¿½ciem i dodaï¿½ go jako dziecko do nowego wï¿½zï¿½a
+                    # A zuï¿½yty wï¿½zeï¿½ usunï¿½ï¿½
                     sub_created_node, created_nodes = self.find_created_node_with_leaf(created_nodes, leaf)
                     if sub_created_node is not None:
                         created_node.add_child(sub_created_node)
                 else:
-                    #je¿eli liœc nie zosta³ jeszcze zu¿yty, to nale¿y go dodaæ jako dziecko wêz³a
-                    # i usun¹æ z listy liœci
+                    #jeï¿½eli liï¿½c nie zostaï¿½ jeszcze zuï¿½yty, to naleï¿½y go dodaï¿½ jako dziecko wï¿½zï¿½a
+                    # i usunï¿½ï¿½ z listy liï¿½ci
                     created_node.add_child(leaf)
                     leafs = self.remove_leaf_from_list(leaf,leafs)
 
             created_nodes.append(created_node)
 
-        # Finalnie, wêze³ ze wszystkimi liœciami oraz wêz³ami bêdzie na pierwszym i jedynym miejscu w liœcie tymczasowych
+        # Finalnie, wï¿½zeï¿½ ze wszystkimi liï¿½ciami oraz wï¿½zï¿½ami bï¿½dzie na pierwszym i jedynym miejscu w liï¿½cie tymczasowych
         tree = Tree(seed_node=created_nodes[0])
         return tree
 
-    #Wyszukanie w liœcie tymczasowych wêz³ów drzewa wez³a, które zawiera szukany lisæ
-    #A nastêpnie usuniêcie tego wêz³a z listy tymczasowych wêz³ów poniewa¿ zosta³ on ju¿ zu¿yty
+    #Wyszukanie w liï¿½cie tymczasowych wï¿½zï¿½ï¿½w drzewa wezï¿½a, ktï¿½re zawiera szukany lisï¿½
+    #A nastï¿½pnie usuniï¿½cie tego wï¿½zï¿½a z listy tymczasowych wï¿½zï¿½ï¿½w poniewaï¿½ zostaï¿½ on juï¿½ zuï¿½yty
     def find_created_node_with_leaf(self, created_nodes, leaf):
 
         for created_node in created_nodes:
@@ -87,7 +87,7 @@ class Converter:
 
         return None, created_nodes
 
-    #Sprawdzenie czy liœæ znajduje siê na liœci liœci
+    #Sprawdzenie czy liï¿½ï¿½ znajduje siï¿½ na liï¿½ci liï¿½ci
     def is_leaf_in_leafs(self, leaf, leafs):
 
         for leaf_tmp in leafs:
@@ -96,14 +96,117 @@ class Converter:
 
         return False
 
-    #Usuniecie liœcia z listy liœci i zwrócenie tej listy
+    #Usuniecie liï¿½cia z listy liï¿½ci i zwrï¿½cenie tej listy
     def remove_leaf_from_list(self,leaf,leafs):
 
         for leaf_in_list in leafs:
             if leaf_in_list.taxon.label is leaf.taxon.label:
                 leafs.remove(leaf_in_list)
 
-        return  leafs
+        return leafs
+
+    def get_dendropy_tree_from_break_tree(self, break_tree):
+        nodes = self._extract_break_tree_leaves(break_tree)
+        sorted_break_tree_leaves_sets, max_leaves_set_size = self._sort_break_tree_leaves_sets(break_tree)
+
+        for leave_set_size in range(max_leaves_set_size):
+            if leave_set_size not in sorted_break_tree_leaves_sets:
+                continue
+
+            for leave_set in sorted_break_tree_leaves_sets[leave_set_size]:
+                one_step_parents = []
+                for leaf in leave_set:
+                    node = self._find_node_with_same_taxon(nodes, leaf)
+                    oldest_parent = self._get_oldest_parent(node)
+                    if oldest_parent not in one_step_parents:
+                        one_step_parents.append(oldest_parent)
+
+                new_oldest_parent = Node()
+                if len(one_step_parents) > 1:
+                    for parent in one_step_parents:
+                        parent.parent_node = new_oldest_parent
+
+        oldest_parents = []
+        for node in nodes:
+            oldest_parent = self._get_oldest_parent(node)
+            if oldest_parent not in oldest_parents:
+                oldest_parents.append(oldest_parent)
+
+        if len(oldest_parents) > 1:
+            seed = Node()
+            for oldest_parent in oldest_parents:
+                oldest_parent.parent_node = seed
+        elif len(oldest_parents) == 1:
+            seed = oldest_parents[0]
+        else:
+            seed = Node()
+
+        tree = Tree(seed_node=seed)
+        tree.deroot()
+        return tree
+
+    def _extract_break_tree_leaves(self, break_tree):
+        leaves = []
+        tree_break_parts_to_remove = []
+        for tree_break_part in break_tree.tree_break_parts:
+            break_part_to_remove = False
+            if len(tree_break_part.leaves_set_a) == 1:
+                cloned_leaves = self._clone_and_detach_leaves_set(tree_break_part.leaves_set_a)
+                leaves.append(cloned_leaves[0])
+                break_part_to_remove = True
+            if len(tree_break_part.leaves_set_b) == 1:
+                cloned_leaves = self._clone_and_detach_leaves_set(tree_break_part.leaves_set_b)
+                leaves.append(cloned_leaves[0])
+                break_part_to_remove = True
+            if break_part_to_remove:
+                tree_break_parts_to_remove.append(tree_break_part)
+
+        for tree_break_part_to_remove in tree_break_parts_to_remove:
+            break_tree.tree_break_parts.remove(tree_break_part_to_remove)
+
+        return leaves
+
+    def _clone_and_detach_leaves_set(self, leaves_set):
+        cloned_leaves_set = []
+        for leaf in leaves_set:
+            cloned_leaf = leaf.clone(2)
+            cloned_leaf.parent_node = None
+            # cloned_leaf._set_parent_node(None)
+            cloned_leaves_set.append(cloned_leaf)
+        return cloned_leaves_set
+
+    def _sort_break_tree_leaves_sets(self, break_tree):
+        sorted_break_tree_leaves_sets = {}
+        max_leaves_set_size = 0
+        for tree_break_part in break_tree.tree_break_parts:
+            leaves_set_a_size = len(tree_break_part.leaves_set_a)
+            leaves_set_b_size = len(tree_break_part.leaves_set_b)
+
+            if leaves_set_a_size > max_leaves_set_size:
+                max_leaves_set_size = leaves_set_a_size
+            if leaves_set_b_size > max_leaves_set_size:
+                max_leaves_set_size = leaves_set_b_size
+
+            if leaves_set_a_size not in sorted_break_tree_leaves_sets:
+                sorted_break_tree_leaves_sets[leaves_set_a_size] = []
+            sorted_break_tree_leaves_sets[leaves_set_a_size].append(self._clone_and_detach_leaves_set(tree_break_part.leaves_set_a))
+            if leaves_set_b_size not in sorted_break_tree_leaves_sets:
+                sorted_break_tree_leaves_sets[leaves_set_b_size] = []
+            sorted_break_tree_leaves_sets[leaves_set_b_size].append(self._clone_and_detach_leaves_set(tree_break_part.leaves_set_b))
+        return sorted_break_tree_leaves_sets, max_leaves_set_size
+
+    def _get_oldest_parent(self, node):
+        if node.parent_node is None:
+            return node
+        return self._get_oldest_parent(node.parent_node)
+
+    def _find_node_with_same_taxon(self, nodes, wanted_node):
+        for node in nodes:
+            if node.taxon.label == wanted_node.taxon.label:
+                return node
+
+
+
 
 
 
