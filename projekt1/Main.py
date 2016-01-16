@@ -68,9 +68,9 @@ if __name__ == "__main__":
         tree = dendropy.Tree.get(
                 data=newickTree,
                 schema="newick")
-        if not TreeCompatibility().check_tree_compatibility(tree):
-            print("Niezgodnosc rodziny klastrow")
-            exit()
+        # if not TreeCompatibility().check_tree_compatibility(tree):
+            # print("Niezgodnosc rodziny klastrow")
+            # exit()
         trees.append(tree)
         draw.drawTree(tree)
         print("\n\n")

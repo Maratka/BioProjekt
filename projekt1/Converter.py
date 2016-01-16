@@ -22,7 +22,7 @@ class Converter:
             leafs = node.leaf_nodes()
             taxon = node.taxon
             cluster = Cluster(taxon,leafs)
-            childs = node. child_nodes()
+            childs = node.child_nodes()
             cluster_list.append(cluster)
             #Nastêpnie dla ka¿dego jego dziecka wykonywana jest ta sama funkcja
             for child in childs:
