@@ -9,6 +9,7 @@ class TreeBreakPart(object):
         # rozbicie na dwa zbiory
         self.leaves_set_a = leaves_set_a
         self.leaves_set_b = leaves_set_b
+        self.found = 0
 
     def __str__(self):
         """Metoda do wypisywania rozbicia na ekran"""

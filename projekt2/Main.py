@@ -67,13 +67,15 @@ if __name__ == "__main__":
 
         tree = dendropy.Tree.get(
                 data=newickTree,
-                schema="newick")
+                schema="newick",
+                rooting='force-unrooted')
         # if not TreeCompatibility().check_tree_compatibility(tree):
             # print("Niezgodnosc rodziny klastrow")
             # exit()
         trees.append(tree)
         draw.drawTree(tree)
         print("\n\n")
+        print(tree.as_ascii_plot())
 
         leaves_str = input("Podaj podzbiór liści do którego drzewo ma być obcięte (rozdzielone spacją):\n")
         if leaves_str:

@@ -19,8 +19,8 @@ def drawTree(tree):
             pos = "LAST"
         drawRightSubtree(children[i], 1, [], pos)
 
-    print("|", end="")
-    print("-" * (INDENT-1), end="")
+    print(" ", end="")
+    print(" " * (INDENT-1), end="")
     print(getName(tree.seed_node))
 
     for i in range((int)(childrenNumber/2), childrenNumber, 1):

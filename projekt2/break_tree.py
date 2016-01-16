@@ -29,3 +29,10 @@ class BreakTree(object):
             if not found_equal_break_part:
                 differences += 1
         return differences
+
+    def count_if_contain_the_same(self, break_part):
+        for my_break_part in self.tree_break_parts:
+            #Porównanie czy dal klastry s¹ takie same
+            if my_break_part.equals_to(break_part):
+                    my_break_part.found += 1
+        pass

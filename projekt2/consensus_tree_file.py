@@ -1,3 +1,5 @@
+from projekt1.break_converter import BreakConverter
+from projekt1.break_tree import BreakTree
 from projekt2.Cluster_Tree import Cluster_Tree
 from projekt2.Comparer import Comparer
 from projekt2.Converter import Converter
@@ -8,34 +10,34 @@ __author__ = 'Gosia'
 def find_consensus_tree(trees, percent):
 
     consensus_tree = None
-    cluster_trees = []
+    break_trees = []
     num_of_trees = len(trees)
-    # Tworzenie drzew w postaci reprezentacji listy klastr�w z podanych drzew i zapisywanie ich w list�
+    # Tworzenie drzew w postaci reprezentacji listy rozbić z podanych drzew i zapisywanie ich w list�
     for tree in trees:
-        cluster_tree = Cluster_Tree(tree)
-        cluster_trees.append(cluster_tree)
+        break_tree = BreakConverter.tree_to_break_tree(tree)
+        break_trees.append(break_tree)
 
-    # Por�wnanie ka�dego drzewa klastr�w z ka�dym drzewem klastr�w i zapisywanie liczby wyst�pie� klastra z jednego drzewa w innych
-    for cluster_tree in cluster_trees:
-        for other_cluster_tree in cluster_trees:
-            if other_cluster_tree is not cluster_tree:
-                for cluster in other_cluster_tree.get_cluster_list():
-                    #Sprawdzenie czy w drzewie jest ten klaster co w innym
+    # Por�wnanie ka�dego drzewa rozbić z ka�dym drzewem rozbić i zapisywanie liczby wyst�pie� rozbicia z jednego drzewa w innych
+    for break_tree in break_trees:
+        for other_break_tree in break_trees:
+            if other_break_tree is not break_tree:
+                for break_part in other_break_tree.tree_break_parts:
+                    #Sprawdzenie czy w drzewie jest ten break co w innym
                     #Jezeli jest to zwi�kszenie licznika zgodno�ci
-                    cluster_tree.count_if_contain_the_same(cluster)
+                    break_tree.count_if_contain_the_same(break_part)
 
-    # Wyliczenie ile powinno by� tych samych wyst�pie�, kt�re powtarzaja sie wiecej niz x% razy
+    # Wyliczenie ile powinno byc tych samych wystapien, ktore powtarzaja sie wiecej niz x% razy
     num_of_similar = float(percent) * num_of_trees
-    #Utworzenie pustego drzewa klastr�w, kt�re b�dzie budowanie z klastr�w, kt�rych wyst�pienia s� wi�ksze ni� x%
-    consensus_tree = Cluster_Tree(None)
-    for cluster_tree in cluster_trees:
-        for cluster in cluster_tree.get_cluster_list():
-            #Sprawdzenie czy liczba wyst�pie� spe�nia warunek
-            if cluster.found >= num_of_similar:
-                #Sprawdzanie czy ten klaster nie zosta� ju� wcze�niej dodany
-                if not cluster_is_in_tree(cluster, consensus_tree):
-                    #Dodanie klastra do listy klastr�w dla drzewa konsensusu
-                    consensus_tree.add_cluster_to_cluster_list(cluster)
+    #Utworzenie pustego drzewa rozbic, ktore bedzie budowanie z rozbic, ktorych wystapienia sa wieksze niz x%
+    consensus_tree = BreakTree([])
+    for break_tree in break_trees:
+        for break_part in break_tree.tree_break_parts:
+            #Sprawdzenie czy liczba wystapien spelnia warunek
+            if break_part.found >= num_of_similar:
+                #Sprawdzanie czy to rozbicie nie zostalo juz wczesniej dodane
+                if not break_part_is_in_tree(break_part, consensus_tree):
+                    #Dodanie rozbicia do listy rozbic dla drzewa konsensusu
+                    consensus_tree.tree_break_parts.append(break_part)
 
     # Sprawdzenie czy w znalezionym drzewie konsensusu rodzina klastrow jest zgodna
     if not TreeCompatibility().check_cluster_tree_compatibility(consensus_tree):
@@ -45,8 +47,8 @@ def find_consensus_tree(trees, percent):
 
     return consensus_tree_dendropy
 
-def cluster_is_in_tree(cluster, cluster_tree):
-    for cluster_in_tree in cluster_tree.get_cluster_list():
-        if Comparer().are_the_same(cluster_in_tree,cluster):
+def break_part_is_in_tree(break_part, consensus_tree):
+    for break_part_in_tree in consensus_tree.tree_break_parts:
+        if break_part_in_tree.equals_to(break_part):
             return True
     return False
